@@ -48,6 +48,11 @@ class ParserState
     private $iLineNo;
 
     /**
+     * @var array<string, bool>
+     */
+    private $identifierEscapeFreeCache = [];
+
+    /**
      * @param string $sText
      * @param int $iLineNo
      */
@@ -121,7 +126,18 @@ class ParserState
         }
         $sCharacter = null;
         while (($sCharacter = $this->parseCharacter(true)) !== null) {
-            if (preg_match('/[a-zA-Z0-9\x{00A0}-\x{FFFF}_-]/Sux', $sCharacter)) {
+            $escapeFree = false;
+
+            if (!isset($this->identifierEscapeFreeCache[$sCharacter])) {
+                $escapeFree = (strpos('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_', $sCharacter) !== false)
+                    || (preg_match('/[\x{00A0}-\x{FFFF}]/Sux', $sCharacter));
+
+                $this->identifierEscapeFreeCache[$sCharacter] = $escapeFree;
+            } else {
+                $escapeFree = $this->identifierEscapeFreeCache[$sCharacter];
+            }
+
+            if ($escapeFree) {
                 $sResult .= $sCharacter;
             } else {
                 $sResult .= '\\' . $sCharacter;
