@@ -12,6 +12,11 @@ class OutputFormatter
      */
     private $oFormat;
 
+    /**
+     * @var array<string, string>
+     */
+    private $preparedSpacesCache = [];
+
     public function __construct(OutputFormat $oFormat)
     {
         $this->oFormat = $oFormat;
@@ -241,7 +246,13 @@ class OutputFormatter
      */
     private function prepareSpace($sSpaceString)
     {
-        return str_replace("\n", "\n" . $this->indent(), $sSpaceString);
+        $cacheKey = $this->oFormat->level() . $sSpaceString;
+
+        if (isset($this->preparedSpacesCache[$cacheKey])) {
+            return $this->preparedSpacesCache[$cacheKey];
+        }
+
+        return $this->preparedSpacesCache[$cacheKey] = str_replace("\n", "\n" . $this->indent(), $sSpaceString);
     }
 
     /**
