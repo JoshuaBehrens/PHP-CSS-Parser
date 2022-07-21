@@ -624,6 +624,17 @@ body {font-size: 1.6em;}';
     /**
      * @test
      */
+    public function parseALotOfStyle()
+    {
+        $oDoc = self::parsedStructureForFile('shopware-6-bootstrap')->render();
+        $oParser = new Parser($oDoc);
+
+        self::assertSame($oDoc, $oParser->parse()->render());
+    }
+
+    /**
+     * @test
+     */
     public function comments()
     {
         $oDoc = self::parsedStructureForFile('comments');
