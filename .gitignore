@@ -5,3 +5,4 @@
 /phpstan.neon
 /vendor/
 !/.phive/phars.xml
+.idea
