@@ -165,6 +165,11 @@ class OutputFormat
      */
     private $iIndentationLevel = 0;
 
+    /**
+     * @var array<string, string|null>
+     */
+    private $varCache = [];
+
     public function __construct()
     {
     }
@@ -176,10 +181,16 @@ class OutputFormat
      */
     public function get($sName)
     {
+        if (isset($this->varCache[$sName])) {
+            return $this->varCache[$sName];
+        }
+
         $aVarPrefixes = ['a', 's', 'm', 'b', 'f', 'o', 'c', 'i'];
         foreach ($aVarPrefixes as $sPrefix) {
             $sFieldName = $sPrefix . ucfirst($sName);
             if (isset($this->$sFieldName)) {
+                $this->varCache[$sName] = $this->$sFieldName;
+
                 return $this->$sFieldName;
             }
         }
@@ -211,6 +222,7 @@ class OutputFormat
                 $sFieldName = $sPrefix . ucfirst($sName);
                 if (isset($this->$sFieldName)) {
                     $this->$sFieldName = $mValue;
+                    unset($this->varCache[$sName]);
                     $bDidReplace = true;
                 }
             }
